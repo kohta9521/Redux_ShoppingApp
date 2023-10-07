@@ -1,34 +1,31 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
+import { init, todoSwitch } from "./reducer";
 
-const FetchApi = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [todo, setTodo] = useState({});
+const FetchApiReducer = () => {
+  const [state, dispatch] = useReducer(todoSwitch, init);
 
   const fetchTodos = () => {
-    setLoading(true);
-    setError(false);
+    dispatch({ type: "START" });
     fetch("https://jsonplaceholder.typicode.com/todos/1")
       .then((res) => res.json())
       .then((data) => {
-        setLoading(false);
-        setTodo(data);
+        dispatch({ type: "SUCCESS", payload: data });
       })
       .catch((err) => {
-        setLoading(false);
-        setError(true);
+        dispatch({ type: "ERROR" });
       });
   };
   return (
     <>
       <div>
-        <button onClick={fetchTodos}>{loading ? "処理中" : "クリック"}</button>
-        <p>{todo?.title}</p>
-        <p>{todo?.userId}</p>
-        <span>{error && "エラーです"}</span>
+        <button onClick={fetchTodos}>
+          {state.loading ? "処理中" : "クリック"}
+        </button>
+        <p>{state.todo?.title}</p>
+        <span>{state.error && "エラーです"}</span>
       </div>
     </>
   );
 };
 
-export default FetchApi;
+export default FetchApiReducer;
